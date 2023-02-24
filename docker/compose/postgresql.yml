@@ -1,5 +1,9 @@
 version: '3.7'
 
+networks:
+  default:
+    name: financial_network
+
 services:
   postgres:
     image: postgres:15.2-alpine3.17
@@ -13,12 +17,27 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - volume-pg-data:/var/lib/postgresql/data
-      - volume-pg-backup:/var/lib/postgresql/backup
+      - ${DATA_DIR}/postgres/data:/var/lib/postgresql/data
+      - ${DATA_DIR}/postgres/backup:/var/lib/postgresql/backup
       - /etc/localtime:/etc/localtime:ro
-
-volumes:
-  volume-pg-data:
-    name: volume-pg-data
-  volume-pg-backup:
-    name: volume-pg-backup
+    networks:
+      default:
+        aliases:
+          - financial-postgres
+  pgadmin:
+    image: dpage/pgadmin4:6.20
+    container_name: financial-pgadmin.docker.net
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=test@mail.com
+      - PGADMIN_DEFAULT_PASSWORD=test
+    ports:
+      - 30002:80
+    expose:
+      - 30002
+    volumes:
+      - ${DATA_DIR}/pgadmin/data:/var/lib/pgadmin
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      default:
+        aliases:
+          - financial-pgadmin
