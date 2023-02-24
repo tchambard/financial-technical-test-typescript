@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:15.2-alpine3.17
+    container_name: financial-postgres.docker.net
+    shm_size: 1gb
+    command: |-
+      postgres
+    environment:
+      - POSTGRES_PASSWORD=test
+      - PGDATA=/var/lib/postgresql/data/pg_data
+    ports:
+      - 5432:5432
+    volumes:
+      - volume-pg-data:/var/lib/postgresql/data
+      - volume-pg-backup:/var/lib/postgresql/backup
+      - /etc/localtime:/etc/localtime:ro
+
+volumes:
+  volume-pg-data:
+    name: volume-pg-data
+  volume-pg-backup:
+    name: volume-pg-backup
