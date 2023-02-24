@@ -10,9 +10,9 @@
     "clean-compile": "yarn clean && yarn compile",
     "clean-lint-compile": "yarn clean && yarn lint && yarn compile",
     "depcheck": "depcheck",
-    "test": "mocha --full-trace --recursive --exit --require source-map-support/register 'build/test/**/*.spec.js'",
-    "test-watch": "mocha -w -R spec --full-trace --recursive --require source-map-support/register 'build/test/**/*.spec.js'",
-    "coverage": "nyc mocha --full-trace --recursive --require source-map-support/register 'build/test/**/*.spec.js'"
+    "test": "mocha --full-trace --recursive --exit --require source-map-support/register 'build/test/**/*Spec.js'",
+    "test-watch": "mocha -w -R spec --full-trace --recursive --require source-map-support/register 'build/test/**/*Spec.js'",
+    "coverage": "nyc mocha --full-trace --recursive --require source-map-support/register 'build/test/**/*Spec.js'"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
@@ -36,6 +36,7 @@
     "eslint-plugin-prefer-arrow": "1.2.3",
     "eslint-plugin-simple-import-sort": "^8.0.0",
     "eslint-plugin-unused-imports": "2.0.0",
+    "mocha": "^10.2.0",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "ts-node": "^8.10.2",
@@ -44,6 +45,7 @@
   "dependencies": {
     "f-promise-async": "^3.0.1",
     "f-streams-async": "^3.0.2",
+    "lodash": "^4.17.21",
     "pg": "^8.9.0",
     "pg-cursor": "^2.8.0",
     "pino": "^8.11.0"
