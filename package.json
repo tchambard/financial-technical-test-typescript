@@ -1,0 +1,74 @@
+{
+  "name": "finance-technical-test-typescript",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "rimraf build",
+    "lint": "eslint 'src/**/*.ts*'",
+    "lint-fix": "yarn lint --fix",
+    "compile": "tsc -v && tsc --pretty",
+    "compile-watch": "tsc --pretty -w",
+    "clean-compile": "yarn clean && yarn compile",
+    "clean-lint-compile": "yarn clean && yarn lint && yarn compile",
+    "depcheck": "depcheck",
+    "test": "mocha --full-trace --recursive --exit --require source-map-support/register 'build/test/**/*.spec.js'",
+    "test-watch": "mocha -w -R spec --full-trace --recursive --require source-map-support/register 'build/test/**/*.spec.js'",
+    "coverage": "nyc mocha --full-trace --recursive --require source-map-support/register 'build/test/**/*.spec.js'"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/chai-as-promised": "^7.1.5",
+    "@types/lodash": "^4.14.191",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.14.1",
+    "@typescript-eslint/eslint-plugin": "5.53.0",
+    "@typescript-eslint/parser": "5.53.0",
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "8.34.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-plugin-chai-friendly": "0.7.2",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-import-newlines": "1.3.1",
+    "eslint-plugin-jsdoc": "39.9.1",
+    "eslint-plugin-mocha": "10.1.0",
+    "eslint-plugin-no-only-tests": "3.1.0",
+    "eslint-plugin-prefer-arrow": "1.2.3",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "eslint-plugin-unused-imports": "2.0.0",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^4.9.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/tchambard/finance-technical-test-typescript"
+  },
+  "author": "teddy.chambard@gmail.com",
+  "license": "MIT",
+  "packageManager": "yarn@3.4.1",
+  "nyc": {
+    "include": [
+      "build/lib/*.js",
+      "build/lib/**/*.js"
+    ],
+    "exclude": [
+      "**/index.js"
+    ],
+    "extension": [
+      ".js"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "lines": 90,
+    "statements": 0,
+    "functions": 0,
+    "branches": 0,
+    "all": true,
+    "cache": false
+  }
+}

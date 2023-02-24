@@ -1,0 +1,27 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": [
+      "es2020"
+    ],
+    "module": "commonjs",
+    "outDir": "build",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "inlineSources": true,
+    "inlineSourceMap": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "incremental": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "files": [
+    "untyped-modules.d.ts"
+  ]
+}
