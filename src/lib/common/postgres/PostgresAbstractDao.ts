@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { QueryConfig, QueryResultRow } from 'pg';
 
-import { IReader } from '../../types/Common';
+import { IReader } from '../../types/common';
 import { PostgresAccess } from './PostgresAccess';
 import { PostgresError } from './PostgresError';
 

@@ -1,9 +1,4 @@
 import { PoolConfig } from 'pg';
-import { Level } from 'pino';
-
-export interface ILogger {
-    level: Level;
-}
 
 export interface IPostgresConfig {
     adminDb: PoolConfig;
@@ -11,14 +6,10 @@ export interface IPostgresConfig {
 }
 
 export interface IConfig {
-    logger: ILogger;
     postgres: IPostgresConfig;
 }
 
 export const defaultConfig: IConfig = {
-    logger: {
-        level: 'info',
-    },
     postgres: {
         adminDb: {
             host: 'localhost',

@@ -1,4 +1,4 @@
-import { IDiagnose } from '../../types/Common';
+import { IDiagnose } from '../../types/common';
 
 enum PostgresErrorCode {
     NOT_FOUND = 'NOT_FOUND',

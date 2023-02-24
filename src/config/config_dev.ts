@@ -3,9 +3,6 @@ import * as _ from 'lodash';
 import { defaultConfig, IConfig } from './default';
 
 const override: Partial<IConfig> = {
-    logger: {
-        level: 'info',
-    },
     postgres: {
         adminDb: {
             host: 'financial.docker.net',

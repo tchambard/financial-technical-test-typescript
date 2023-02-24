@@ -4,7 +4,7 @@ import { ClientConfig as PostgresClientConfig, Pool, PoolClient, QueryConfig, Qu
 import * as Cursor from 'pg-cursor';
 import { pino } from 'pino';
 
-import { IReader } from '../../types/Common';
+import { IReader } from '../../types/common';
 import { PostgresError } from './PostgresError';
 
 export type IPostgresClientConfig = PostgresClientConfig;
