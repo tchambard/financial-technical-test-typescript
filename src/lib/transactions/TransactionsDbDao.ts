@@ -1,15 +1,37 @@
+import * as BN from 'bn.js';
+
 import { PostgresAbstractDao, PostgresAccess, PostgresError } from '../common/postgres';
-import { ITransactionData, ITransactionModel, ITransactionsReader } from '../types/transactions';
-import {
-    ITransactionDbModel,
-    TRANSACTIONS_FULL_TABLE_NAME,
-    TRANSACTIONS_SCHEMA_NAME,
-    TRANSACTIONS_TABLE_NAME,
-    TransactionsDbMapper,
-    TransactionsFields,
-} from './TransactionsDbMapper';
+import { ITransactionData, ITransactionModel, ITransactionsReader, TransactionDirection } from '../types/transactions';
+
+export const TRANSACTIONS_SCHEMA_NAME = 'financial';
+export const TRANSACTIONS_TABLE_NAME = 'transactions';
+export const TRANSACTIONS_FULL_TABLE_NAME = `${TRANSACTIONS_SCHEMA_NAME}.${TRANSACTIONS_TABLE_NAME}`;
+
+export interface ITransactionDbModel {
+    id: number;
+    date: string;
+    direction: TransactionDirection;
+    volume: BN;
+    rate: BN;
+}
+
+export enum TransactionsFields {
+    ID = 'id',
+    DATE = 'date',
+    DIRECTION = 'direction',
+    VOLUME = 'volume',
+    RATE = 'rate',
+}
 
 export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> {
+
+    public static fromDbModel = (dbModel: ITransactionDbModel): ITransactionModel => ({
+        id: dbModel.id,
+        date: new Date(dbModel.date),
+        direction: dbModel.direction,
+        volume: new BN(dbModel.volume),
+        rate: new BN(dbModel.rate),
+    });
 
     constructor(postgresAccess: PostgresAccess) {
         super(postgresAccess, TRANSACTIONS_SCHEMA_NAME, TRANSACTIONS_TABLE_NAME);
@@ -25,19 +47,21 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
             values: [
                 transaction.date.toISOString(),
                 transaction.direction,
-                transaction.volume,
-                transaction.rate,
+                transaction.volume.toString(),
+                transaction.rate.toString(),
             ],
-        }, TransactionsDbMapper.fromDbModel);
+        }, TransactionsDbDao.fromDbModel);
     }
 
     public async getTransactionById(id: string): Promise<ITransactionModel> {
         try {
             return await this.find<ITransactionModel>({
                 name: 'transactions_select_by_id',
-                text: `SELECT * FROM ${TRANSACTIONS_FULL_TABLE_NAME} WHERE ${TransactionsFields.ID} = $1`,
+                text: `SELECT * 
+                        FROM ${TRANSACTIONS_FULL_TABLE_NAME} 
+                        WHERE ${TransactionsFields.ID} = $1`,
                 values: [id],
-            }, TransactionsDbMapper.fromDbModel);
+            }, TransactionsDbDao.fromDbModel);
         } catch (e) {
             if (e instanceof PostgresError && e.code === PostgresError.CODES.NOT_FOUND) {
                 throw new PostgresError(PostgresError.CODES.NOT_FOUND, 'not found', `Transaction not found with id '${id}'`);
@@ -48,8 +72,10 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
 
     public async readAllTransactions(): Promise<ITransactionsReader> {
         return this.read<ITransactionModel>({
-            text: `SELECT * FROM ${TRANSACTIONS_FULL_TABLE_NAME};`,
-        }, TransactionsDbMapper.fromDbModel);
+            text: `SELECT * 
+                    FROM ${TRANSACTIONS_FULL_TABLE_NAME}
+                    ORDER BY ${TransactionsFields.DATE};`,
+        }, TransactionsDbDao.fromDbModel);
     }
 
     protected async _init(): Promise<void> {
@@ -66,10 +92,10 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
                 ${TransactionsFields.DIRECTION} text check ( direction in ('in', 'out') ) not null,
             
                 -- Amount of crypto transferred
-                ${TransactionsFields.VOLUME} real not null,
+                ${TransactionsFields.VOLUME} double precision not null,
             
                 -- Rate between
-                ${TransactionsFields.RATE} real not null
+                ${TransactionsFields.RATE} double precision not null
             );`,
         });
     }

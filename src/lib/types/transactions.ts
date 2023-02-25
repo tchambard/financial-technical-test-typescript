@@ -1,3 +1,5 @@
+import * as BN from 'bn.js';
+
 import { IReader } from './common';
 
 export enum TransactionDirection {
@@ -8,15 +10,16 @@ export enum TransactionDirection {
 export interface ITransactionData {
     date: Date;
     direction: TransactionDirection;
-    volume: number;
-    rate: number;
+    volume: BN;
+    rate: BN;
 }
+
 export interface ITransactionModel {
     id: number;
     date: Date;
     direction: TransactionDirection;
-    volume: number;
-    rate: number;
+    volume: BN;
+    rate: BN;
 }
 
 export type ITransactionsReader = IReader<ITransactionModel>;

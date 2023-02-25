@@ -1,9 +1,8 @@
+import * as BN from 'bn.js';
 import { assert } from 'chai';
 
 import { IConfig } from '../config/default';
-import { TransactionsDbDao } from '../lib/transactions/TransactionsDbDao';
-import { TRANSACTIONS_SCHEMA_NAME, TRANSACTIONS_TABLE_NAME } from '../lib/transactions/TransactionsDbMapper';
-import { TransactionsService } from '../lib/transactions/TransactionsService';
+import { TRANSACTIONS_SCHEMA_NAME, TRANSACTIONS_TABLE_NAME, TransactionsDbDao } from '../lib/transactions/TransactionsDbDao';
 import { ITransactionData, ITransactionModel, TransactionDirection } from '../lib/types/transactions';
 import { transactionsFixtures } from './__fixtures/transactions_data';
 import { PostgresTestHelper } from './PostgresTestHelper';
@@ -17,7 +16,7 @@ const postgresTestHelper = new PostgresTestHelper({
     db: config.postgres.db,
 }, TRANSACTIONS_SCHEMA_NAME, [TRANSACTIONS_TABLE_NAME, TRANSACTIONS_TABLE_NAME]);
 
-describe('> TransactionDbDao', function () {
+describe('> TransactionsDbDao', function () {
     this.timeout(60000);
 
     function assertTransactionEqual(transaction: ITransactionModel, expectedTransaction: ITransactionModel): void {
@@ -25,17 +24,16 @@ describe('> TransactionDbDao', function () {
         assert.equal(transaction.id, expectedTransaction.id);
         assert.equal(transaction.date.toISOString(), expectedTransaction.date.toISOString());
         assert.equal(transaction.direction, expectedTransaction.direction);
-        assert.equal(transaction.volume, expectedTransaction.volume);
-        assert.equal(transaction.rate, expectedTransaction.rate);
+        assert.equal(transaction.volume.toString(), expectedTransaction.volume.toString());
+        assert.equal(transaction.rate.toString(), expectedTransaction.rate.toString());
     }
 
-    let transactionService: TransactionsService;
+    let transactionDao: TransactionsDbDao;
 
     before(async () => {
         await postgresTestHelper.init();
-        const transactionDao = new TransactionsDbDao(postgresTestHelper.db);
+        transactionDao = new TransactionsDbDao(postgresTestHelper.db);
         await transactionDao.init();
-        transactionService = new TransactionsService(transactionDao);
     });
 
     after(async () => {
@@ -53,17 +51,17 @@ describe('> TransactionDbDao', function () {
                 const transaction: ITransactionData = {
                     date: new Date('2023/01/01'),
                     direction: TransactionDirection.IN,
-                    volume: 5,
-                    rate: 6.0,
+                    volume: new BN(5),
+                    rate: new BN(6.0),
                 };
-                const createdTransaction = await transactionService.createTransaction(transaction);
+                const createdTransaction = await transactionDao.createTransaction(transaction);
                 assertTransactionEqual(createdTransaction, { ...transaction, id: createdTransaction.id } as ITransactionModel);
             });
         });
 
         describe('> readAllTransactions', () => {
             it('> should return empty reader', async () => {
-                const { length, reader } = await transactionService.readAllTransactions();
+                const { length, reader } = await transactionDao.readAllTransactions();
                 assert.equal(length, 0);
                 assert.isEmpty(reader.toArray());
             });
@@ -76,13 +74,13 @@ describe('> TransactionDbDao', function () {
             await postgresTestHelper.reset();
 
             for (const t of transactions_sample) {
-                await transactionService.createTransaction(t);
+                await transactionDao.createTransaction(t);
             }
         });
 
         describe('> readAllTransactions', () => {
             it('> should return created transactions', async () => {
-                const { length, reader } = await transactionService.readAllTransactions();
+                const { length, reader } = await transactionDao.readAllTransactions();
                 assert.equal(length, transactions_sample.length);
                 await reader.forEach((transaction, idx) => {
                     assertTransactionEqual(transaction, { ...transactions_sample[idx], id: transaction.id });

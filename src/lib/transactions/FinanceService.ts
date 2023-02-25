@@ -2,7 +2,7 @@ import { IReader } from '../types/common';
 import { ITransactionData, ITransactionModel } from '../types/transactions';
 import { TransactionsDbDao } from './TransactionsDbDao';
 
-export class TransactionsService {
+export class FinanceService {
     private symbolsDbDao: TransactionsDbDao;
 
     constructor(symbolsDbDao: TransactionsDbDao) {
