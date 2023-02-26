@@ -14,7 +14,7 @@ const transactions_sample = transactionsFixtures();
 const postgresTestHelper = new PostgresTestHelper({
     adminDb: config.postgres.adminDb,
     db: config.postgres.db,
-}, TRANSACTIONS_SCHEMA_NAME, [TRANSACTIONS_TABLE_NAME, TRANSACTIONS_TABLE_NAME]);
+}, TRANSACTIONS_SCHEMA_NAME, [TRANSACTIONS_TABLE_NAME]);
 
 describe('> TransactionsDbDao', function () {
     this.timeout(60000);

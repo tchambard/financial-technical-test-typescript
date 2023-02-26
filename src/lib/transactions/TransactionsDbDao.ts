@@ -7,7 +7,7 @@ export const TRANSACTIONS_SCHEMA_NAME = 'financial';
 export const TRANSACTIONS_TABLE_NAME = 'transactions';
 export const TRANSACTIONS_FULL_TABLE_NAME = `${TRANSACTIONS_SCHEMA_NAME}.${TRANSACTIONS_TABLE_NAME}`;
 
-export interface ITransactionDbModel {
+interface ITransactionDbModel {
     id: number;
     date: string;
     direction: TransactionDirection;
@@ -15,7 +15,7 @@ export interface ITransactionDbModel {
     rate: BN;
 }
 
-export enum TransactionsFields {
+enum TransactionsFields {
     ID = 'id',
     DATE = 'date',
     DIRECTION = 'direction',
