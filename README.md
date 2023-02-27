@@ -1,4 +1,4 @@
-# Simple cost basis computation algorithm
+# Simple cost basis computation algorithm (FIFO)
 
 ## How to test ?
 
