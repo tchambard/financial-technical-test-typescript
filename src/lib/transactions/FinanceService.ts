@@ -57,15 +57,15 @@ export class FinanceService {
         await transactions.forEach(async (transaction) => {
 
             if (transaction.direction === TransactionDirection.IN) {
-                const txCost = transaction.volume.mul(transaction.rate);
+                const txCostUsd = transaction.volume.mul(transaction.rate);
 
                 // compute and store TX cost basis
                 const costBasis: ITransactionCostBasisModel = {
                     txId: transaction.id,
                     totalVolume: lastCostBasis.totalVolume.add(transaction.volume),
-                    totalCostUsd: lastCostBasis.totalCostUsd.add(txCost),
+                    totalCostUsd: lastCostBasis.totalCostUsd.add(txCostUsd),
                 };
-                await this.costsBasisDbDao.createTransactionCostsBasis(costBasis);
+                await this.costsBasisDbDao.createTransactionCostBasis(costBasis);
 
                 lastCostBasis = {
                     totalVolume: costBasis.totalVolume,
@@ -81,7 +81,7 @@ export class FinanceService {
             } else {
 
                 const volumeToSell = transaction.volume;
-                const fairMarketValue = transaction.rate.div(volumeToSell);
+                const fairMarketValue = transaction.rate;
 
                 const costBasis: ITransactionCostBasisModel = {
                     txId: transaction.id,
@@ -109,16 +109,19 @@ export class FinanceService {
                     targetedVolume = targetedVolume.add(volumeOnCurrentTx);
 
                     // compute and store TX cost basis lot
+                    const txShareCostUsd = volumeOnCurrentTx.mul(activeTxIn.txRate);
                     const lot: ITransactionCostBasisLotModel = {
                         txOutId: transaction.id,
                         txInId: activeTxIn.txId,
-                        pnl: fairMarketValue.sub(volumeOnCurrentTx.mul(activeTxIn.txRate)),
+                        txInVolume: volumeOnCurrentTx,
+                        txInCost: txShareCostUsd,
+                        pnl: fairMarketValue.sub(activeTxIn.txRate).mul(volumeOnCurrentTx),
                     };
                     await this.costsBasisLotDbDao.createTransactionCostsBasisLot(lot);
 
                     // increment TX out cost basis
                     costBasis.totalVolume = costBasis.totalVolume.sub(volumeOnCurrentTx);
-                    costBasis.totalCostUsd = costBasis.totalCostUsd.sub(activeTxIn.txVolume.mul(activeTxIn.txRate));
+                    costBasis.totalCostUsd = costBasis.totalCostUsd.sub(volumeOnCurrentTx.mul(activeTxIn.txRate));
                     costBasis.txPnl = costBasis.txPnl!.add(lot.pnl);
 
                     // mutate volume of active TX before next loop
@@ -126,7 +129,7 @@ export class FinanceService {
                 }
 
                 // store computed cost basis
-                await this.costsBasisDbDao.createTransactionCostsBasis(costBasis);
+                await this.costsBasisDbDao.createTransactionCostBasis(costBasis);
 
                 lastCostBasis = {
                     totalVolume: costBasis.totalVolume,
@@ -135,5 +138,9 @@ export class FinanceService {
             }
 
         });
+    }
+
+    public async readComputedTransactionsCostBasisFromLots(): Promise<ITransactionsCostBasisReader> {
+        return this.costsBasisLotDbDao.readComputedTransactionsCostBasisFromLots();
     }
 }

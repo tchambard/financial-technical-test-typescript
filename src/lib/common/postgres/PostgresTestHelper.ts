@@ -1,4 +1,5 @@
-import { IPostgresConfig, PostgresAccess } from '../lib/common/postgres/index';
+import { PostgresAccess } from './PostgresAccess';
+import { IPostgresConfig } from './PostgresDb';
 
 export class PostgresTestHelper {
     public readonly db: PostgresAccess;
@@ -25,6 +26,7 @@ export class PostgresTestHelper {
 
     public async reset(): Promise<void> {
         await this.clearTables();
+        await this.db.db.query({ text: `ALTER SEQUENCE financial.transactions_id_seq RESTART WITH 1;` });
     }
 
     private async createDatabase(): Promise<void> {

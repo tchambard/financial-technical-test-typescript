@@ -12,7 +12,7 @@
     "depcheck": "depcheck",
     "test": "mocha --full-trace --recursive --exit --require source-map-support/register 'build/test/**/*Spec.js'",
     "test-watch": "mocha -w -R spec --full-trace --recursive --require source-map-support/register 'build/test/**/*Spec.js'",
-    "coverage": "nyc mocha --full-trace --recursive --require source-map-support/register 'build/test/**/*Spec.js'"
+    "coverage": "nyc mocha --full-trace --recursive --exit --require source-map-support/register 'build/test/**/*Spec.js'"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.1",
@@ -22,6 +22,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.14.1",
     "@types/pg": "^8.6.6",
+    "@types/yargs": "^17.0.22",
     "@typescript-eslint/eslint-plugin": "5.53.0",
     "@typescript-eslint/parser": "5.53.0",
     "chai": "^4.3.7",
@@ -50,7 +51,8 @@
     "lodash": "^4.17.21",
     "pg": "^8.9.0",
     "pg-cursor": "^2.8.0",
-    "pino": "^8.11.0"
+    "pino": "^8.11.0",
+    "yargs": "^17.7.1"
   },
   "repository": {
     "type": "git",

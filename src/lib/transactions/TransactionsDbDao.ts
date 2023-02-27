@@ -15,12 +15,12 @@ interface ITransactionDbModel {
     rate: BN;
 }
 
-enum TransactionsFields {
-    ID = 'id',
-    DATE = 'date',
-    DIRECTION = 'direction',
-    VOLUME = 'volume',
-    RATE = 'rate',
+enum F {
+    id = 'id',
+    date = 'date',
+    direction = 'direction',
+    volume = 'volume',
+    rate = 'rate',
 }
 
 export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> {
@@ -40,8 +40,8 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
     public async createTransaction(transaction: ITransactionData): Promise<ITransactionModel> {
         return this.queryFirst<ITransactionModel>({
             name: 'transactions_insert',
-            text: `INSERT INTO ${TRANSACTIONS_FULL_TABLE_NAME} (${TransactionsFields.DATE}, 
-                    ${TransactionsFields.DIRECTION}, ${TransactionsFields.VOLUME}, ${TransactionsFields.RATE})
+            text: `INSERT INTO ${TRANSACTIONS_FULL_TABLE_NAME} (${F.date}, 
+                    ${F.direction}, ${F.volume}, ${F.rate})
                 VALUES ($1, $2, $3, $4)
                 RETURNING *;`,
             values: [
@@ -56,10 +56,10 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
     public async getTransactionById(id: string): Promise<ITransactionModel> {
         try {
             return await this.find<ITransactionModel>({
-                name: 'transactions_select_by_id',
+                name: 'get_transaction_by_id',
                 text: `SELECT * 
                         FROM ${TRANSACTIONS_FULL_TABLE_NAME} 
-                        WHERE ${TransactionsFields.ID} = $1`,
+                        WHERE ${F.id} = $1`,
                 values: [id],
             }, TransactionsDbDao.fromDbModel);
         } catch (e) {
@@ -72,9 +72,10 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
 
     public async readAllTransactions(): Promise<ITransactionsReader> {
         return this.read<ITransactionModel>({
+            name: 'read_all_transactions',
             text: `SELECT * 
                     FROM ${TRANSACTIONS_FULL_TABLE_NAME}
-                    ORDER BY ${TransactionsFields.DATE};`,
+                    ORDER BY ${F.date};`,
         }, TransactionsDbDao.fromDbModel);
     }
 
@@ -83,19 +84,19 @@ export class TransactionsDbDao extends PostgresAbstractDao<ITransactionDbModel> 
             name: 'transactions_create_table',
             text: `CREATE TABLE IF NOT EXISTS ${TRANSACTIONS_FULL_TABLE_NAME} (
                 -- Unique identifier for the transaction
-                ${TransactionsFields.ID} serial not null primary key,
+                ${F.id} serial not null primary key,
             
                 -- Date at which the transaction happened
-                ${TransactionsFields.DATE} text not null,
+                ${F.date} text not null,
             
                 -- Whether money is being received, or spent
-                ${TransactionsFields.DIRECTION} text check ( direction in ('in', 'out') ) not null,
+                ${F.direction} text check ( direction in ('in', 'out') ) not null,
             
                 -- Amount of crypto transferred
-                ${TransactionsFields.VOLUME} double precision not null,
+                ${F.volume} double precision not null,
             
                 -- Rate between
-                ${TransactionsFields.RATE} double precision not null
+                ${F.rate} double precision not null
             );`,
         });
     }

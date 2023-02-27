@@ -14,11 +14,11 @@ interface ITransactionsCostBasisDbModel {
     tx_pnl: BN;
 }
 
-enum TransactionCostBasisFields {
-    TX_ID = 'tx_id',
-    TOTAL_VOLUME = 'total_volume',
-    TOTAL_COST = 'total_cost_usd',
-    TX_PNL = 'tx_pnl',
+enum F {
+    tx_id = 'tx_id',
+    total_volume = 'total_volume',
+    total_cost_usd = 'total_cost_usd',
+    tx_pnl = 'tx_pnl',
 }
 
 export class TransactionsCostBasisDbDao extends PostgresAbstractDao<ITransactionsCostBasisDbModel> {
@@ -34,11 +34,11 @@ export class TransactionsCostBasisDbDao extends PostgresAbstractDao<ITransaction
         super(postgresAccess, TRANSACTIONS_COST_BASIS_SCHEMA_NAME, TRANSACTIONS_COST_BASIS_TABLE_NAME);
     }
 
-    public async createTransactionCostsBasis(costBasis: ITransactionCostBasisModel): Promise<ITransactionCostBasisModel> {
+    public async createTransactionCostBasis(costBasis: ITransactionCostBasisModel): Promise<ITransactionCostBasisModel> {
         return this.queryFirst<ITransactionCostBasisModel>({
-            name: 'costs_basis_insert',
-            text: `INSERT INTO ${TRANSACTIONS_COST_BASIS_FULL_TABLE_NAME} (${TransactionCostBasisFields.TX_ID}, 
-                    ${TransactionCostBasisFields.TOTAL_VOLUME}, ${TransactionCostBasisFields.TOTAL_COST}, ${TransactionCostBasisFields.TX_PNL})
+            name: 'create_transaction_cost_basis',
+            text: `INSERT INTO ${TRANSACTIONS_COST_BASIS_FULL_TABLE_NAME} (${F.tx_id}, 
+                    ${F.total_volume}, ${F.total_cost_usd}, ${F.tx_pnl})
                 VALUES ($1, $2, $3, $4)
                 RETURNING *;`,
             values: [
@@ -52,9 +52,10 @@ export class TransactionsCostBasisDbDao extends PostgresAbstractDao<ITransaction
 
     public async readAllTransactionsCostBasis(): Promise<ITransactionsCostBasisReader> {
         return this.read<ITransactionCostBasisModel>({
+            name: 'read_all_transactions_cost_basis',
             text: `SELECT * 
                     FROM ${TRANSACTIONS_COST_BASIS_FULL_TABLE_NAME}
-                    ORDER BY ${TransactionCostBasisFields.TX_ID};`,
+                    ORDER BY ${F.tx_id};`,
         }, TransactionsCostBasisDbDao.fromDbModel);
     }
 
@@ -63,16 +64,16 @@ export class TransactionsCostBasisDbDao extends PostgresAbstractDao<ITransaction
             name: 'costs_basis_create_table',
             text: `CREATE TABLE IF NOT EXISTS ${TRANSACTIONS_COST_BASIS_FULL_TABLE_NAME} (
                 -- Unique identifier referencing a transaction
-                ${TransactionCostBasisFields.TX_ID} integer not null primary key,
+                ${F.tx_id} integer not null primary key,
             
                 -- Total shares hold after transaction
-                ${TransactionCostBasisFields.TOTAL_VOLUME} double precision not null,
+                ${F.total_volume} double precision not null,
             
                 -- Total cost corresponding 
-                ${TransactionCostBasisFields.TOTAL_COST} double precision not null,
+                ${F.total_cost_usd} double precision not null,
                 
                 -- Transaction profits and loses (only for tx out)
-                ${TransactionCostBasisFields.TX_PNL} double precision
+                ${F.tx_pnl} double precision
             );`,
         });
     }

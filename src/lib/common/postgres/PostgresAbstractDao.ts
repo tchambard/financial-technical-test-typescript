@@ -1,3 +1,4 @@
+import { Reader } from 'f-streams-async';
 import * as _ from 'lodash';
 import { QueryConfig, QueryResultRow } from 'pg';
 
@@ -89,10 +90,13 @@ export abstract class PostgresAbstractDao<DbModel extends QueryResultRow> {
         return count != null ? +count : 0;
     }
 
-    protected async read<T>(query: QueryConfig, mapFn: (dbModel: DbModel) => T): Promise<IReader<T>> {
+    protected async read<T extends QueryResultRow = DbModel, M extends QueryResultRow = DbModel>(
+        query: QueryConfig,
+        mapFn?: (dbModel: M) => T,
+    ): Promise<IReader<T>> {
         const result = await this.access.db.read(query);
         return {
-            reader: result.reader.map(mapFn),
+            reader: mapFn ? result.reader.map(mapFn) : result.reader as Reader<T>,
             length: result.length,
         };
     }

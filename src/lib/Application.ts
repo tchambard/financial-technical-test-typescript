@@ -14,9 +14,10 @@ export class Application {
     private readonly config: IConfig;
     private readonly postgresAccess: PostgresAccess;
     private readonly transactionsDbDao: TransactionsDbDao;
-    private readonly transactionsService: FinanceService;
     private readonly costsBasisDbDao: TransactionsCostBasisDbDao;
     private readonly costsBasisLotDbDao: TransactionsCostBasisLotDbDao;
+
+    public readonly financeService: FinanceService;
 
     constructor(config: IConfig) {
         this.config = config;
@@ -25,7 +26,7 @@ export class Application {
         this.transactionsDbDao = new TransactionsDbDao(this.postgresAccess);
         this.costsBasisDbDao = new TransactionsCostBasisDbDao(this.postgresAccess);
         this.costsBasisLotDbDao = new TransactionsCostBasisLotDbDao(this.postgresAccess);
-        this.transactionsService = new FinanceService(this.transactionsDbDao, this.costsBasisDbDao, this.costsBasisLotDbDao);
+        this.financeService = new FinanceService(this.transactionsDbDao, this.costsBasisDbDao, this.costsBasisLotDbDao);
     }
 
     public async init(): Promise<void> {

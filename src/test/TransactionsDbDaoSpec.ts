@@ -2,10 +2,10 @@ import * as BN from 'bn.js';
 import { assert } from 'chai';
 
 import { IConfig } from '../config/default';
+import { PostgresTestHelper } from '../lib/common/postgres/PostgresTestHelper';
 import { TRANSACTIONS_SCHEMA_NAME, TRANSACTIONS_TABLE_NAME, TransactionsDbDao } from '../lib/transactions/TransactionsDbDao';
 import { ITransactionData, ITransactionModel, TransactionDirection } from '../lib/types/transactions';
 import { transactionsFixtures } from './__fixtures/transactions_data';
-import { PostgresTestHelper } from './PostgresTestHelper';
 
 const config: IConfig = require('../config/config_test.js');
 
