@@ -2,6 +2,7 @@
   "name": "finance-technical-test-typescript",
   "version": "1.0.0",
   "scripts": {
+    "start": "node build/lib/start",
     "clean": "rimraf build",
     "lint": "eslint 'src/**/*.ts*'",
     "lint-fix": "yarn lint --fix",
